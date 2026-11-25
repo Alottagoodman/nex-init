@@ -1,0 +1,35 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "nex-init"
+version = "0.1.0"
+description = "Deterministic Self-Healing RCTI v3.0 Package Router and AST Synchronizer"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "The Trinity", email = "inquiries@houseoflawpc.com" }]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Code Generators",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = []
+
+[project.optional-dependencies]
+watch = ["watchfiles>=0.21.0"]
+
+[project.scripts]
+nex-init = "nex_init.cli:main"
+
+[project.entry-points."hatchling.build.prepare"]
+nex_init = "nex_init.core_components.hooks:hatchling_hook"
+
+[tool.hatch.build.targets.wheel]
+packages = ["nex_init"]

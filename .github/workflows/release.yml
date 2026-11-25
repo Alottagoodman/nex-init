@@ -1,0 +1,78 @@
+name: Release nex-init to PyPI (100% OIDC Trusted Provenance)
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build Universal Wheel & Source Distribution
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+          enable-cache: true
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build universal distribution packages
+        run: |
+          uv build --out-dir dist/
+
+      - name: Verify build artifacts
+        run: |
+          ls -la dist/
+          # Verify sdist contents
+          tar -ztvf dist/*.tar.gz
+
+      - name: Upload distributions as staging artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-artifacts
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 1
+
+  publish:
+    name: Publish ALL artifacts via OIDC Trusted Publisher (PEP 740)
+    needs: [build]
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/nex-init
+    permissions:
+      id-token: write  # MANDATORY: Required for keyless PyPI OIDC exchange
+    steps:
+      - name: Download built distributions
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-artifacts
+          path: dist/
+
+      - name: Verify distribution count before upload
+        run: |
+          echo "=== ARTIFACTS STAGED FOR PYPI PUBLISH ==="
+          ls -lh dist/
+          test $(ls -1 dist/*.whl | wc -l) -ge 1
+          test $(ls -1 dist/*.tar.gz | wc -l) -ge 1
+
+      - name: Publish to PyPI with Full Provenance Attestations
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/
+          attestations: true

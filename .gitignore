@@ -1,0 +1,44 @@
+# Python bytecode & cache artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.whl
+*.tar.gz
+dist/
+build/
+*.egg-info/
+.eggs/
+
+# RCTI Dynamic Engine & Atomic Temporary Files
+.nex_*
+.rcti_*
+__pycache__/_rcti_v3_*.json
+__pycache__/_rcti_v2_*.json
+
+# Virtual environments & local state
+.venv/
+venv/
+env/
+.direnv/
+.env
+
+# Testing & Linting caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Operating System artifacts
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+
+# Workspace & Editor scratchpads
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
